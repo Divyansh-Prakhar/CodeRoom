@@ -1,11 +1,9 @@
 import { Inngest } from "inngest";
 import { connectDB } from "./db.js";
 import User from "../models/User.js";
+import { deleteStreamUser, upsertStreamUser } from "./stream.js";
 
-// ❗ REMOVE stream import if file not created yet
-// import { deleteStreamUser, upsertStreamUser } from "./stream.js";
-
-export const inngest = new Inngest({ id: "CodeRoom" });
+export const inngest = new Inngest({ id: "talent-iq" });
 
 const syncUser = inngest.createFunction(
   { id: "sync-user" },
@@ -17,21 +15,18 @@ const syncUser = inngest.createFunction(
 
     const newUser = {
       clerkId: id,
-      email: email_addresses?.[0]?.email_address,
-      name: `${first_name || ""} ${last_name || ""}`.trim(),
+      email: email_addresses[0]?.email_address,
+      name: `${first_name || ""} ${last_name || ""}`,
       profileImage: image_url,
     };
 
     await User.create(newUser);
 
-    // ❗ Commented until stream.js is ready
-    /*
     await upsertStreamUser({
       id: newUser.clerkId.toString(),
       name: newUser.name,
       image: newUser.profileImage,
     });
-    */
   }
 );
 
@@ -42,13 +37,9 @@ const deleteUserFromDB = inngest.createFunction(
     await connectDB();
 
     const { id } = event.data;
-
     await User.deleteOne({ clerkId: id });
 
-    // ❗ Commented until stream.js is ready
-    /*
     await deleteStreamUser(id.toString());
-    */
   }
 );
 

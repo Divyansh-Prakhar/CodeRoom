@@ -4,8 +4,8 @@ import path from "path";
 import cors from "cors";
 import {serve} from "inngest/express"
 import { connect } from "http2";
-import { connectDb } from "./lib/db.js";
-import { Inngest, inngest } from "./lib/inngest.js"
+import { connectDB } from "./lib/db.js";
+import { inngest,functions } from "./lib/inngest.js"
 
 const app=express();
 const __dirname=path.resolve();
@@ -34,7 +34,7 @@ if(ENV.NODE_ENV=="production"){
 }
 const startServer= async() =>{
   try{
-    await connectDb();
+    await connectDB();
     app.listen(ENV.PORT,()=>{
       console.log("Server is running on port :",ENV.PORT)
     });
